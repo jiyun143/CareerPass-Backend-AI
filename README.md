@@ -12,6 +12,13 @@
 ![Gunicorn](https://img.shields.io/badge/Gunicorn%20%2B%20Uvicorn-499848?style=for-the-badge&logo=gunicorn&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
+## AI 파이프라인
+
+음성 면접 분석은 두 단계 파이프라인으로 구성됩니다.
+
+1. **STT (Speech-to-Text)**: `routers/voice_ai.py`에서 업로드된 음성 파일(m4a/mp3/wav/webm/ogg)을 OpenAI **Whisper-1** 모델에 전달해 한국어 텍스트로 변환합니다.
+2. **답변 품질 분석**: 변환된 텍스트(+자소서/질문 컨텍스트)를 `routers/interview_ai.py`에서 파인튜닝된 **GPT** 모델에 전달해 유창성, 내용 깊이, 구조, 필러 단어 수, 강점/개선점/리스크 등을 채점합니다. 결과는 `response_format={"type": "json_object"}`로 JSON 출력을 강제한 뒤 Pydantic 스키마(`AnswerAnalysisResult`)로 재검증해, 음성→텍스트→채점으로 이어지는 파이프라인 끝단에서 형식이 깨진 데이터가 백엔드로 넘어가지 않도록 합니다.
+
 ## 주요 기능
 
 - **음성 STT** (`routers/voice_ai.py`, `/voice/analyze`) — 면접 답변 음성 파일(m4a/mp3/wav/webm/ogg)을 받아 OpenAI **Whisper-1**으로 한국어 텍스트 변환
